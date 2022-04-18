@@ -8,13 +8,12 @@ int main()
     Post myPost(username);
 	char input[MAXSIZE];
 	char* command;
-	Letter l;
 	cout << "Welcome user " << username <<endl;
 	cout << "Enter \"help\" if you need help :0\n";
 	
 	do
 	{
-		cout <<"You currently have " << l.getLettersCount() << " letters in your mail\n"; 
+		cout <<"You currently have " << Letter::getLettersCount() << " letters in your mail\n"; 
 		cin.getline(input,MAXSIZE);
 		int length = strlen(input) + 1;
 		command = new char[length];
