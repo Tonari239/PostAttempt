@@ -41,59 +41,83 @@ Post::~Post()
 	}
 
 Post& Post::sendLetterTo()
+{
+	Letter letter = createLetter();
+	
+		
+	char* fileName = new char[strlen(letter.getTitle()) + 6];
+	strcpy(fileName, letter.getTitle());
+	strcpy(fileName + strlen(letter.getTitle()), ".mail");
+
+		
+	ofstream out(fileName, ios::binary);
+	writeLetterToFile(out,letter);
+	return *this;
+}
+
+Letter Post::createLetter()
+{
+	char input[MAXSIZE];
+	cout << "Enter who you want to send a letter to:\n";
+	cin.getline(input, MAXSIZE);
+	char* recipient = new char[strlen(input)];
+	copyString(recipient, input);
+	cout << "Enter title:\n";
+	cin.getline(input, MAXSIZE);
+	char* title = new char[strlen(input)];
+	copyString(title, input);
+
+	cout << "Enter letter content:\n";
+	cin.getline(input, MAXSIZE);
+	char* content = new char[strlen(input)];
+	copyString(content, input);
+
+	Letter letter(this->sender, recipient, title, content);
+	//creation date is handled by constructor
+	delete[] recipient;
+	delete[] title;
+	delete[] content;
+	return letter;
+}
+
+ostream& Post::writeLetterToFile(ofstream& out,Letter& letter)
+{
+	int length = strlen(this->sender);
+	out.write((const char*)&length, sizeof(length));
+	out.write((const char*)letter.getSender(), length);
+
+
+	length = strlen(letter.getRecipient());
+	out.write((const char*)&length, sizeof(length));
+	out.write((letter.getRecipient()), length);
+
+
+
+	length = strlen(letter.getTitle());
+	out.write((const char*)&length, sizeof(length));
+	out.write(letter.getTitle(), length);
+
+	length = strlen(letter.getContent());
+	out.write((const char*)&length, sizeof(length));
+	out.write(letter.getContent(), length);
+
+	length = strlen(letter.getCreationDate());
+	out.write((const char*)&length, sizeof(length));
+	out.write(letter.getCreationDate(), length);
+
+	if (letter.getLastReadDate() != nullptr)
 	{
-		char input[MAXSIZE];
-		cout << "Enter who you want to send a letter to:\n";
-		cin.getline(input, MAXSIZE);
-		char* recipient = new char[strlen(input)];
-		copyString(recipient, input);
-		cout << "Enter title:\n";
-		cin.getline(input, MAXSIZE);
-		char* title = new char[strlen(input)];
-		copyString(title, input);
-
-		cout << "Enter letter content:\n";
-		cin.getline(input, MAXSIZE);
-		char* content = new char[strlen(input)];
-		copyString(content, input);
-
-		Letter letter(this->sender, recipient, title, content);
-
-		char* fileName = new char[strlen(title) + 6];
-		strcpy(fileName, title);
-		strcpy(fileName + strlen(title), ".mail");
-
-		
-		ofstream out(fileName, ios::binary);
-
-		int length = strlen(this->sender);
+		length = strlen(letter.getLastReadDate());
 		out.write((const char*)&length, sizeof(length));
-		out.write((const char*)letter.getSender(), length);
+		out.write(letter.getLastReadDate(), length);
 
-
-		length = strlen(recipient);
-		out.write((const char*)&length, sizeof(length));
-		out.write((letter.getRecipient()), length);
-
-		
-
-		length = strlen(title);
-		out.write((const char*)&length, sizeof(length));
-		out.write(letter.getTitle(), length);
-
-		length = strlen(content);
-		out.write((const char*)&length, sizeof(length));
-		out.write(letter.getContent(), length);
-
-
-		delete[] recipient;
-		delete[] title;
-		delete[] content;
-		return *this;
 	}
+	
+	return out;
+}
 
 void Post::readLetter(ifstream& file)
-	{
+{
 		Letter letter;
 
 		//sender
@@ -133,5 +157,14 @@ void Post::readLetter(ifstream& file)
 		file.read(content, contentLength);
 		content[contentLength] = '\0';
 		letter.setContent(content);
+
+		int creationDateLength;
+		file.read((char*)&creationDateLength, sizeof(creationDateLength));
+		char* creationDate = new char[creationDateLength + 1];
+		file.read(creationDate, creationDateLength);
+		creationDate[creationDateLength] = '\0';
+		letter.setCreationDate(creationDate);
+
+		letter.setLastReadDate(time(0));
 		letter.print();
-	}
+}

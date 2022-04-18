@@ -8,6 +8,7 @@ int main()
     Post myPost(username);
 	char input[MAXSIZE];
 	char* command;
+	bool isInMiddleOfCommand = false;
 	cout << "Welcome user " << username <<endl;
 	cout << "Enter \"help\" if you need help :0\n";
 	

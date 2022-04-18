@@ -7,6 +7,8 @@ class Post
 	char* sender;
 	void free();
 	void copy(const Post& other);
+	Letter createLetter();
+	ostream& writeLetterToFile(ofstream& out,Letter& letter);
 
 public:
 	Post& sendLetterTo();

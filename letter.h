@@ -12,6 +12,9 @@ class Letter
 	char* recipient = nullptr;
 	char* title = nullptr;
 	char* content = nullptr;
+	char* creationDate;
+	char* lastReadDate;
+
 	void copy(const Letter& letter);
 	void free();
 public:
@@ -19,11 +22,15 @@ public:
 	char* getRecipient() const;
 	char* getTitle() const;
 	char* getContent() const;
+	char* getCreationDate() const;
+	char* getLastReadDate() const;
 
 	void setSender(const char* word);
 	void setRecipient(const char* word);
 	void setTitle(const char* word);
 	void setContent(const char* word);
+	void setCreationDate(char* creationDate);
+	void setLastReadDate(time_t readDate);
 
 	static int getLettersCount();
 	Letter();

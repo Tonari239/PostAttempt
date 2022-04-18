@@ -8,6 +8,12 @@ int Letter::count = 0;
 
 void Letter::copy(const Letter& letter)
 {
+	copyString(this->creationDate, letter.creationDate);
+	if (letter.lastReadDate != nullptr)
+	{
+		copyString(this->lastReadDate, letter.lastReadDate);
+	}
+	
 	copyString(this->sender, letter.sender);
 	copyString(this->recipient, letter.recipient);
 	copyString(this->title, letter.title);
@@ -20,11 +26,15 @@ void Letter::free()
 	delete[] recipient;
 	delete[] title;
 	delete[] content;
+	delete[] creationDate;
+	delete[] lastReadDate;
 }
 
 Letter::Letter() :sender(nullptr),recipient(nullptr),title(nullptr),content(nullptr)
 {
-
+	time_t now = time(0);
+	setCreationDate(ctime(&now));
+	setLastReadDate(NULL);
 }
 
 Letter::Letter(const char* sender, const char* recipient, const char* title, const char* content)
@@ -33,6 +43,9 @@ Letter::Letter(const char* sender, const char* recipient, const char* title, con
 	setRecipient(recipient);
 	setTitle(title);
 	setContent(content);
+	time_t now = time(0);
+	setCreationDate(ctime(&now));
+	setLastReadDate(NULL);
 	++count;
 }
 
@@ -82,6 +95,16 @@ char* Letter::getContent() const
 	return this->content;
 }
 
+char* Letter::getCreationDate() const
+{
+	return this->creationDate;
+}
+
+char* Letter::getLastReadDate() const
+{
+	return this->lastReadDate;
+}
+
 void Letter::setSender(const char* word)
 {
 	copyString(this->sender, word);
@@ -102,12 +125,32 @@ void Letter::setContent(const char* word)
 	copyString(this->content, word);
 }
 
+void Letter::setCreationDate(char* crDate)
+{
+	copyString(this->creationDate, crDate);
+}
+
+void Letter::setLastReadDate(time_t readDate)
+{
+	if (readDate != NULL)
+	{
+		time_t now = time(0);
+		copyString(this->lastReadDate, ctime(&now));
+	}
+	else
+	{
+		this->lastReadDate = nullptr;
+	}
+}
+
 void Letter::print()
 {   
-	cout << "_________________________________"<<endl;
+	cout << "__________________________________________________________________"<<endl;
 	cout << "|Sender: " << this->sender << endl;
 	cout << "|Recipient: " << this->recipient << endl;
 	cout << "|Title: " << this->title << endl;
 	cout << "|Content: " << this->content << endl;
-	cout << "|_________________________________"<<endl;
+	cout << "|                    Created On:" << this->getCreationDate();
+	this->getLastReadDate() != NULL ? (cout << "|                    Last Read On:" << this->getLastReadDate()): cout<<"";
+	cout << "|__________________________________________________________________"<<endl;
 }
