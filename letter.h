@@ -8,10 +8,10 @@ using namespace std;
 class Letter
 {
 	static int count;
-	char* sender = nullptr;
-	char* recipient = nullptr;
-	char* title = nullptr;
-	char* content = nullptr;
+	char* sender;
+	char* recipient;
+	char* title;
+	char* content;
 	char* creationDate;
 	char* lastReadDate;
 
@@ -24,6 +24,7 @@ public:
 	char* getContent() const;
 	char* getCreationDate() const;
 	char* getLastReadDate() const;
+	static int getLettersCount();
 
 	void setSender(const char* word);
 	void setRecipient(const char* word);
@@ -32,7 +33,7 @@ public:
 	void setCreationDate(char* creationDate);
 	void setLastReadDate(time_t readDate);
 
-	static int getLettersCount();
+	
 	Letter();
 	Letter(const char* sender, const char* recipient, const char* title, const char* content);
 	Letter(const Letter& letter);

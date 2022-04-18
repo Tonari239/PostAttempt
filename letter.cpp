@@ -35,6 +35,7 @@ Letter::Letter() :sender(nullptr),recipient(nullptr),title(nullptr),content(null
 	time_t now = time(0);
 	setCreationDate(ctime(&now));
 	setLastReadDate(NULL);
+	++count;
 }
 
 Letter::Letter(const char* sender, const char* recipient, const char* title, const char* content)
@@ -74,7 +75,6 @@ int Letter::getLettersCount()
 	return count;
 }
 
-
 char* Letter::getSender() const
 {
 	return this->sender;
@@ -107,26 +107,46 @@ char* Letter::getLastReadDate() const
 
 void Letter::setSender(const char* word)
 {
+	if (this->sender == nullptr)
+	{
+		delete[] sender;
+	}
 	copyString(this->sender, word);
 }
 
 void Letter::setRecipient(const char* word)
 {
+	if (this->recipient == nullptr)
+	{
+		delete[] recipient;
+	}
 	copyString(this->recipient, word);
 }
 
 void Letter::setTitle(const char* word)
 {
+	if (this->title == nullptr)
+	{
+		delete[] title;
+	}
 	copyString(this->title, word);
 }
 
 void Letter::setContent(const char* word)
 {
+	if (this->content == nullptr)
+	{
+		delete[] content;
+	}
 	copyString(this->content, word);
 }
 
 void Letter::setCreationDate(char* crDate)
 {
+	if (this->creationDate == nullptr)
+	{
+		delete[] creationDate;
+	}
 	copyString(this->creationDate, crDate);
 }
 

@@ -16,41 +16,39 @@ void Post::copy(const Post& other)
 }
 
 Post::Post(const char* senderName)
-	{
-		copyString(this->sender, senderName);
-	}
+{
+	copyString(this->sender, senderName);
+}
 
 Post::Post(const Post& other)
-	{
-		copy(other);
-	}
+{
+	copy(other);
+}
 
 Post& Post::operator=(const Post& other)
-	{
-		if (this != &other)
-		{
-			free();
-			copy(other);
-		}
-		return *this;
-	}
-
-Post::~Post()
+{
+	if (this != &other)
 	{
 		free();
+		copy(other);
 	}
+	return *this;
+}
+
+Post::~Post()
+{
+	free();
+}
 
 Post& Post::sendLetterTo()
 {
 	Letter letter = createLetter();
-	
-		
+
 	char* fileName = new char[strlen(letter.getTitle()) + 6];
 	strcpy(fileName, letter.getTitle());
 	strcpy(fileName + strlen(letter.getTitle()), ".mail");
-
-		
 	ofstream out(fileName, ios::binary);
+
 	writeLetterToFile(out,letter);
 	return *this;
 }
@@ -73,7 +71,6 @@ Letter Post::createLetter()
 	copyString(content, input);
 
 	Letter letter(this->sender, recipient, title, content);
-	//creation date is handled by constructor
 	delete[] recipient;
 	delete[] title;
 	delete[] content;
@@ -92,14 +89,15 @@ ostream& Post::writeLetterToFile(ofstream& out,Letter& letter)
 	out.write((letter.getRecipient()), length);
 
 
-
 	length = strlen(letter.getTitle());
 	out.write((const char*)&length, sizeof(length));
 	out.write(letter.getTitle(), length);
 
+
 	length = strlen(letter.getContent());
 	out.write((const char*)&length, sizeof(length));
 	out.write(letter.getContent(), length);
+
 
 	length = strlen(letter.getCreationDate());
 	out.write((const char*)&length, sizeof(length));
@@ -112,59 +110,54 @@ ostream& Post::writeLetterToFile(ofstream& out,Letter& letter)
 		out.write(letter.getLastReadDate(), length);
 
 	}
-	
 	return out;
 }
 
 void Post::readLetter(ifstream& file)
 {
-		Letter letter;
+	Letter letter;
 
-		//sender
-		int senderLength;
+	//sender
+	int senderLength;
+	file.read((char*)&senderLength, sizeof(senderLength)); 
+	this->sender = new char[senderLength + 1];
+	file.read(this->sender, senderLength);
+	this->sender[senderLength] = '\0';
+	letter.setSender(this->sender);
 
-		file.read((char*)&senderLength, sizeof(senderLength)); 
+	//recipient
+	int recipientLength;
+	file.read((char*)&recipientLength, sizeof(recipientLength)); 
+	char* recipient = new char[recipientLength + 1];
+	file.read(recipient, recipientLength);
+	recipient[recipientLength] = '\0';
+	letter.setRecipient(recipient);
 
-		this->sender = new char[senderLength + 1];
-		file.read(this->sender, senderLength);
-		this->sender[senderLength] = '\0';
+	//title
+	int titleLength;
+	file.read((char*)&titleLength, sizeof(titleLength));
+	char* title = new char[titleLength + 1];
+	file.read(title, titleLength);
+	title[titleLength] = '\0';
+	letter.setTitle(title);
 
-		letter.setSender(this->sender);
+	//content
+	int contentLength;
+	file.read((char*)&contentLength, sizeof(contentLength));
+	char* content = new char[contentLength + 1];
+	file.read(content, contentLength);
+	content[contentLength] = '\0';
+	letter.setContent(content);
 
-		//recipient
-		int recipientLength;
-		file.read((char*)&recipientLength, sizeof(recipientLength)); 
+	//creationDate
+	int creationDateLength;
+	file.read((char*)&creationDateLength, sizeof(creationDateLength));
+	char* creationDate = new char[creationDateLength + 1];
+	file.read(creationDate, creationDateLength);
+	creationDate[creationDateLength] = '\0';
+	letter.setCreationDate(creationDate);
 
-		char* recipient = new char[recipientLength + 1];
-		file.read(recipient, recipientLength);
-		recipient[recipientLength] = '\0';
-		letter.setRecipient(recipient);
-
-		//title
-		int titleLength;
-		file.read((char*)&titleLength, sizeof(titleLength));
-
-		char* title = new char[titleLength + 1];
-		file.read(title, titleLength);
-		title[titleLength] = '\0';
-		letter.setTitle(title);
-
-		//content
-		int contentLength;
-		file.read((char*)&contentLength, sizeof(contentLength));
-
-		char* content = new char[contentLength + 1];
-		file.read(content, contentLength);
-		content[contentLength] = '\0';
-		letter.setContent(content);
-
-		int creationDateLength;
-		file.read((char*)&creationDateLength, sizeof(creationDateLength));
-		char* creationDate = new char[creationDateLength + 1];
-		file.read(creationDate, creationDateLength);
-		creationDate[creationDateLength] = '\0';
-		letter.setCreationDate(creationDate);
-
-		letter.setLastReadDate(time(0));
-		letter.print();
+	//lastReadDate
+	letter.setLastReadDate(time(0));
+	letter.print();
 }
